@@ -1,284 +1,128 @@
 # Arena Viva
 
-Painel de gestão para arenas esportivas, desenvolvido para centralizar reservas, agenda, clientes, quadras e preços em uma interface rápida e responsiva.
+Sistema de reservas para arenas esportivas, com duas pontas ligadas ao mesmo banco de dados:
 
-Esta versão funciona como uma demonstração navegável do produto. Os dados são armazenados localmente no navegador e ainda não existe integração com backend, autenticação real ou meios de pagamento.
+- **Página pública da arena (LP)** — `/<endereço-da-arena>`: apresenta a arena e as quadras, e permite que o cliente final **solicite uma reserva** informando nome, WhatsApp, quadra, número de pessoas, dia e horário. Só aparecem horários realmente livres.
+- **Painel do dono** — `/painel`: solicitações recebidas (em tempo real), confirmação com mensagem pronta no WhatsApp, agenda por dia e quadra, reservas, clientes e configuração de quadras, preços e horários.
 
-## Visão do produto
+O sistema é **multi-arena**: cada conta cadastra a própria arena e só enxerga os próprios dados.
 
-O Arena Viva foi pensado para facilitar a operação diária de espaços com quadras de areia, como arenas de beach tennis, futevôlei e vôlei de praia.
+## Como funciona uma reserva
 
-Principais objetivos:
+```
+Cliente na LP                          Dono no painel
+─────────────                          ──────────────
+escolhe quadra, dia e horário livre
+envia nome, WhatsApp e nº de pessoas ──► aparece em "Solicitações" (tempo real)
+         │                                     │
+   horário fica bloqueado               [Confirmar reserva]
+   enquanto está pendente                      │
+                                        status → confirmada
+                                        abre o WhatsApp do cliente com a
+                                        mensagem do template preenchida
+                                               │
+                                        [Recusar] → horário volta a ficar livre
+```
 
-- reduzir o trabalho manual no controle de horários;
-- mostrar rapidamente a ocupação e a receita prevista;
-- acompanhar reservas pendentes e confirmadas;
-- organizar informações básicas dos clientes;
-- configurar quadras e preços em um só lugar;
-- servir como base para um futuro produto comercial.
+- Solicitações **pendentes já bloqueiam o horário**, evitando pedidos duplicados.
+- O banco **impede reservas sobrepostas** na mesma quadra (constraint de exclusão no Postgres), mesmo com duas solicitações simultâneas.
+- A LP **nunca lê a tabela de reservas**: usa as funções `available_slots` e `request_booking`, que não expõem nome nem telefone de outros clientes.
+- Cada cliente pode ter no máximo 3 solicitações pendentes por arena.
 
-## Funcionalidades disponíveis
+### Mensagem de confirmação no WhatsApp
 
-### Visão geral
+Em **Arena e quadras → Mensagem de confirmação** o dono edita o template, com pré-visualização. Variáveis disponíveis:
 
-- resumo das reservas do dia;
-- receita prevista;
-- horários disponíveis;
-- indicador de ocupação;
-- destaque para a próxima reserva;
-- widget de condições da arena;
-- gráfico de receita semanal;
-- lista das próximas reservas.
+| Variável | Exemplo |
+| --- | --- |
+| `{nome}` | Marina |
+| `{arena}` | Arena Viva |
+| `{quadra}` | Quadra 01 |
+| `{data}` | sábado, 24/10 |
+| `{horario}` | 10:00 às 11:00 |
+| `{pessoas}` | 4 |
+| `{valor}` | R$ 90 |
 
-### Agenda
-
-- visualização semanal;
-- alternância entre os dias no celular;
-- identificação visual de reservas confirmadas e pendentes;
-- criação de reserva a partir de um horário disponível;
-- abertura dos detalhes ao selecionar uma reserva.
-
-### Reservas
-
-- listagem completa;
-- busca por cliente, atividade ou quadra;
-- filtro por status;
-- criação de novas reservas;
-- edição de reservas existentes;
-- confirmação de reservas pendentes;
-- cancelamento com etapa de confirmação.
-
-### Clientes
-
-- busca por nome;
-- total de reservas por cliente;
-- valor acumulado em reservas;
-- painel lateral com informações e última atividade.
-
-### Espaços e preços
-
-- configuração do preço-base de cada quadra;
-- ativação e desativação de quadras;
-- restauração dos valores padrão;
-- uso automático do preço configurado ao criar uma reserva.
-
-### Outros recursos
-
-- central de notificações;
-- perfil demonstrativo do administrador;
-- mensagens de confirmação das ações;
-- persistência local dos dados;
-- layout responsivo para desktop, tablet e celular.
+Ao clicar em **Confirmar reserva**, o painel marca a reserva como confirmada e abre `wa.me` com a mensagem pronta; o dono só aperta "enviar". Se o navegador bloquear a nova aba, aparece um botão "Abrir WhatsApp" no aviso.
 
 ## Tecnologias
 
-- [React 19](https://react.dev/)
-- JavaScript com JSX
-- [Vite 7](https://vite.dev/)
+- React 19 + Vite 7 + React Router 7
+- Supabase (Postgres, Auth, Realtime, RLS)
+- Vitest para testes de unidade; Postgres em Docker para testes do banco
 - CSS puro
-- `localStorage` para persistência da demonstração
-- Google Fonts: DM Sans e Barlow Condensed
 
-## Pré-requisitos
+## Estrutura
 
-- Node.js 20 ou superior;
-- npm 10 ou superior.
+```text
+arena-viva/
+├── src/
+│   ├── main.jsx               # Rotas: /, /painel/*, /:slug
+│   ├── styles.css             # Identidade visual e painel
+│   ├── components/            # Icon, Modal/Drawer acessíveis, SetupNotice
+│   ├── landing/               # LP pública + formulário de solicitação
+│   ├── painel/                # Login, onboarding, contexto e telas do painel
+│   └── lib/
+│       ├── supabase.js        # Cliente Supabase
+│       ├── api.js             # Todas as chamadas ao banco
+│       └── format.js          # Datas no fuso da arena, telefone, template do WhatsApp
+├── supabase/
+│   ├── config.toml            # Supabase local (CLI)
+│   ├── migrations/            # Schema, RLS e funções
+│   ├── seed.sql               # Arena de demonstração
+│   └── tests/                 # Testes do banco
+└── scripts/db-test.sh
+```
 
-O projeto foi desenvolvido e validado com Node.js 24.
+## Rodando localmente
 
-## Instalação
-
-Clone o repositório, entre na pasta do projeto e instale as dependências:
+Pré-requisitos: Node.js 20+, Docker (para o Supabase local e os testes do banco).
 
 ```bash
-git clone <url-do-repositorio>
-cd arena-viva-demo
 npm install
-```
-
-No Windows PowerShell, caso a execução de `npm.ps1` esteja bloqueada, utilize:
-
-```powershell
-npm.cmd install
-```
-
-## Executando em desenvolvimento
-
-```bash
+npm run db:start          # sobe o Supabase local e aplica migrations + seed
+npx supabase status       # mostra a API URL e a Publishable key
+cp .env.example .env.local   # preencha com os valores acima
 npm run dev
 ```
 
-No Windows:
+- LP de demonstração: http://127.0.0.1:5173/arena-viva
+- Painel: http://127.0.0.1:5173/painel. Crie uma conta; sem arena vinculada, o painel oferece cadastrar uma. Para assumir a arena do seed, vincule seu usuário:
 
-```powershell
-npm.cmd run dev
+```sql
+insert into public.arena_members (arena_id, user_id)
+select a.id, u.id from public.arenas a, auth.users u
+where a.slug = 'arena-viva' and u.email = 'seu@email.com';
 ```
 
-O Vite exibirá o endereço local no terminal, normalmente:
+## Configurando o Supabase em produção
 
-```text
-http://127.0.0.1:5173/
-```
+1. Crie um projeto em [supabase.com](https://supabase.com) (região São Paulo).
+2. Aplique o schema: `npx supabase link --project-ref <ref>` e `npx supabase db push` (ou cole `supabase/migrations/*.sql` no SQL Editor).
+3. Em **Authentication → URL Configuration**, defina o *Site URL* e inclua `https://seu-dominio/painel` nos *Redirect URLs*.
+4. Se quiser controlar quem cria arenas, desative cadastros públicos em **Authentication → Sign In / Providers** e convide os donos manualmente.
+5. Configure `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` no ambiente de build.
 
-> Não abra o arquivo `index.html` diretamente pelo Explorer. A aplicação usa módulos do React e deve ser executada pelo servidor do Vite.
+### Hospedagem
 
-## Build de produção
+O build (`npm run build` → `dist/`) é estático, mas usa rotas do navegador (`/arena-viva`, `/painel/agenda`). A hospedagem precisa **redirecionar rotas desconhecidas para `index.html`** (SPA fallback). Na Vercel/Netlify isso é uma regra de rewrite; sem isso, abrir um link direto retorna 404.
 
-Para gerar uma versão otimizada:
-
-```bash
-npm run build
-```
-
-Os arquivos finais serão criados em `dist/`.
-
-Para visualizar o build:
-
-```bash
-npm run preview
-```
-
-No Windows, substitua `npm` por `npm.cmd` caso necessário.
-
-## Comandos disponíveis
+## Comandos
 
 | Comando | Descrição |
 | --- | --- |
-| `npm run dev` | Inicia o ambiente de desenvolvimento. |
-| `npm run build` | Gera o build otimizado em `dist/`. |
-| `npm run preview` | Abre uma prévia local do build de produção. |
+| `npm run dev` | Ambiente de desenvolvimento. |
+| `npm run build` | Build de produção em `dist/`. |
+| `npm test` | Testes de unidade (datas, telefone, template). |
+| `npm run db:test` | Sobe um Postgres descartável e testa schema, RLS e funções. |
+| `npm run db:start` | Sobe o Supabase local. |
+| `npm run db:reset` | Recria o banco local a partir das migrations e do seed. |
 
-## Estrutura do projeto
+## Próximas etapas
 
-```text
-arena-viva-demo/
-├── src/
-│   ├── App.jsx        # Componentes, dados e regras da aplicação
-│   ├── main.jsx       # Inicialização do React
-│   └── styles.css     # Identidade visual e responsividade
-├── dist/              # Build gerado automaticamente
-├── index.html         # Documento HTML usado pelo Vite
-├── package.json       # Dependências e scripts
-├── package-lock.json  # Versões exatas das dependências
-├── vite.config.js     # Configuração do Vite
-└── README.md
-```
-
-### Atenção sobre `dist/`
-
-Não edite manualmente os arquivos dentro de `dist/`, incluindo arquivos como `index-CJRnlK_7.js` e `index-D2ScNrmM.css`.
-
-Esses nomes possuem hashes e são recriados automaticamente por `npm run build`. Toda alteração deve ser feita em `src/App.jsx`, `src/styles.css` ou nos demais arquivos-fonte.
-
-## Organização atual do código
-
-O projeto ainda está concentrado em `src/App.jsx` por ser uma base demonstrativa. O arquivo contém:
-
-- dados iniciais de reservas e quadras;
-- ícones SVG;
-- componentes das telas;
-- modais e painéis laterais;
-- gerenciamento de estado;
-- regras de criação, edição, confirmação e cancelamento;
-- integração com `localStorage`.
-
-Quando a equipe começar a expandir o produto, a recomendação é separar o código em:
-
-```text
-src/
-├── components/
-├── pages/
-├── hooks/
-├── services/
-├── data/
-├── utils/
-└── styles/
-```
-
-## Persistência local
-
-Esta demonstração utiliza duas chaves no `localStorage`:
-
-| Chave | Conteúdo |
-| --- | --- |
-| `arena-viva-bookings-v2` | Reservas criadas e modificadas. |
-| `arena-viva-courts-v2` | Preços e disponibilidade das quadras. |
-
-Para restaurar completamente os dados iniciais, abra as ferramentas do navegador e remova essas duas chaves em **Application > Local Storage**.
-
-Os dados armazenados dessa forma pertencem somente ao navegador e dispositivo utilizados. Eles não são compartilhados entre usuários.
-
-## Identidade visual
-
-A interface utiliza uma paleta inspirada em arenas de praia:
-
-| Papel | Cor |
-| --- | --- |
-| Azul profundo | `#123f49` |
-| Azul oceano | `#0d8f91` |
-| Coral | `#ed725e` |
-| Amarelo-sol | `#efb642` |
-| Areia | `#f4efe5` |
-| Papel | `#fffdf8` |
-
-As principais variáveis estão declaradas no início de `src/styles.css`.
-
-## Convenções para contribuir
-
-1. Crie uma branch a partir da branch principal.
-2. Use nomes claros, como `feature/pagamentos` ou `fix/filtro-reservas`.
-3. Faça alterações somente nos arquivos-fonte, nunca diretamente em `dist/`.
-4. Preserve a interface responsiva.
-5. Evite criar botões ou links sem comportamento implementado.
-6. Execute o build antes de abrir um pull request.
-7. Descreva no pull request o que mudou e como testar.
-
-Exemplo de fluxo:
-
-```bash
-git checkout -b feature/minha-funcionalidade
-npm install
-npm run dev
-npm run build
-git add .
-git commit -m "feat: adiciona minha funcionalidade"
-```
-
-## Checklist antes de entregar uma alteração
-
-- [ ] A página abre pelo servidor do Vite.
-- [ ] O console do navegador não apresenta erros.
-- [ ] `npm run build` termina com sucesso.
-- [ ] Os fluxos alterados foram testados.
-- [ ] A interface continua funcionando em tela pequena.
-- [ ] Nenhum arquivo de `dist/` foi editado manualmente.
-- [ ] Textos estão revisados e com acentuação correta.
-- [ ] Botões e links visíveis possuem comportamento funcional.
-
-## Limitações da versão atual
-
-- os dados são apenas locais;
-- não existe cadastro ou login real;
-- clima, receita semanal e alguns indicadores são demonstrativos;
-- não existe validação de conflito entre horários;
-- ainda não há pagamento online;
-- ainda não há integração com WhatsApp ou e-mail;
-- ainda não há diferentes níveis de acesso.
-
-## Próximas etapas recomendadas
-
-1. Separar os componentes e regras de negócio em arquivos menores.
-2. Criar uma API e conectar um banco de dados.
-3. Implementar autenticação e permissões.
-4. Adicionar validação de conflito entre quadras e horários.
-5. Integrar pagamentos e controle financeiro.
-6. Criar notificações por WhatsApp.
-7. Adicionar relatórios e indicadores com dados reais.
-8. Implementar testes automatizados.
-9. Preparar implantação e monitoramento de produção.
-
-## Status
-
-Versão atual: **2.0.0 — demonstração front-end**.
-
-O projeto está pronto para apresentação e evolução, mas precisa de backend e infraestrutura antes de operar com dados reais de clientes.
+- Aviso ao dono por e-mail/WhatsApp quando chega uma solicitação (Edge Function + gatilho).
+- Expiração automática de solicitações não respondidas.
+- Preços diferentes por faixa de horário (pico/fora de pico) e reservas recorrentes.
+- Pagamento antecipado (Pix) e controle financeiro.
+- Bloqueios de agenda (manutenção, eventos) pelo painel — a tabela `blocks` já existe e é respeitada pela LP.
+- Domínio próprio por arena e imagens/galeria na LP.
