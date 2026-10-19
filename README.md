@@ -43,7 +43,7 @@ Em **Arena e quadras → Mensagem de confirmação** o dono edita o template, co
 | `{pessoas}` | 4 |
 | `{valor}` | R$ 90 |
 
-Ao clicar em **Confirmar reserva**, o painel marca a reserva como confirmada e abre `wa.me` com a mensagem pronta; o dono só aperta "enviar". Se o navegador bloquear a nova aba, aparece um botão "Abrir WhatsApp" no aviso.
+Ao clicar em **Confirmar reserva**, o painel marca a reserva como confirmada e abre o WhatsApp (`api.whatsapp.com/send`) com a mensagem pronta; o dono só aperta "enviar". Se o navegador bloquear a nova aba, aparece um botão "Abrir WhatsApp" no aviso.
 
 ## Tecnologias
 

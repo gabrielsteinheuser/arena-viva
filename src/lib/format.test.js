@@ -55,6 +55,7 @@ describe('mensagem de confirmação', () => {
       court: { name: 'Quadra 01' },
     })
     expect(text).toBe('Marina|Arena Viva|Quadra 01|sábado, 24/10|10:00 às 11:00|4|R$ 90')
-    expect(whatsappUrl('11988241620', 'Olá & até')).toBe('https://wa.me/5511988241620?text=Ol%C3%A1%20%26%20at%C3%A9')
+    expect(whatsappUrl('11988241620', 'Olá & até ✅')).toBe('https://api.whatsapp.com/send?phone=5511988241620&text=Ol%C3%A1%20%26%20at%C3%A9%20%E2%9C%85')
+    expect(whatsappUrl('(11) 98824-1620')).toBe('https://api.whatsapp.com/send?phone=5511988241620')
   })
 })

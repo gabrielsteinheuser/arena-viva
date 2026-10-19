@@ -9,7 +9,8 @@ const WEEKDAYS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', '
 const SLOT_OPTIONS = [30, 60, 90, 120]
 const COURT_COLORS = ['#0d8f91', '#ed725e', '#e8ae3c', '#123f49', '#7c5cbf', '#3f9b5b']
 
-export const DEFAULT_TEMPLATE = 'Olá, {nome}! Sua reserva na {arena} está confirmada ✅\n\n📅 {data}\n⏰ {horario}\n🏐 {quadra} · {pessoas} pessoa(s)\n💰 {valor}\n\nAté lá!'
+// Sem emojis: a página intermediária do WhatsApp no computador pode exibi-los como "�".
+export const DEFAULT_TEMPLATE = 'Olá, {nome}! Sua reserva na {arena} está confirmada.\n\nData: {data}\nHorário: {horario}\nQuadra: {quadra} ({pessoas} pessoas)\nValor: {valor}\n\nAté lá!'
 
 export default function Settings() {
   return (

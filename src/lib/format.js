@@ -136,5 +136,6 @@ export function confirmationMessage({ arena, booking, court }) {
   })
 }
 
+// Usa api.whatsapp.com direto: o redirecionamento do wa.me corrompe emojis da mensagem.
 export const whatsappUrl = (phone, text = '') =>
-  `https://wa.me/55${phoneDigits(phone)}${text ? `?text=${encodeURIComponent(text)}` : ''}`
+  `https://api.whatsapp.com/send?phone=55${phoneDigits(phone)}${text ? `&text=${encodeURIComponent(text)}` : ''}`

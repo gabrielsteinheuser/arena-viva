@@ -29,9 +29,9 @@ create table public.arenas (
   -- Mensagem enviada pelo WhatsApp ao confirmar uma reserva. Variáveis:
   -- {nome} {arena} {quadra} {data} {horario} {pessoas} {valor}
   confirmation_template text not null default
-    'Olá, {nome}! Sua reserva na {arena} está confirmada ✅' || chr(10) || chr(10) ||
-    '📅 {data}' || chr(10) || '⏰ {horario}' || chr(10) || '🏐 {quadra} · {pessoas} pessoa(s)' || chr(10) ||
-    '💰 {valor}' || chr(10) || chr(10) || 'Até lá!'
+    'Olá, {nome}! Sua reserva na {arena} está confirmada.' || chr(10) || chr(10) ||
+    'Data: {data}' || chr(10) || 'Horário: {horario}' || chr(10) || 'Quadra: {quadra} ({pessoas} pessoas)' || chr(10) ||
+    'Valor: {valor}' || chr(10) || chr(10) || 'Até lá!'
     check (length(confirmation_template) <= 1000),
   active boolean not null default true,
   created_at timestamptz not null default now()

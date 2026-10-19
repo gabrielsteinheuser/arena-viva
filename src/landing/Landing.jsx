@@ -171,6 +171,7 @@ function BookingRequest({ arena }) {
     try {
       await api.requestBooking({ courtId, startsAt: slot.starts_at, name: form.name, phone: form.phone, people: form.people })
       setDone({ court, slot, people: form.people, name: form.name.trim().split(' ')[0] })
+      requestAnimationFrame(() => document.getElementById('reservar')?.scrollIntoView({ behavior: 'smooth' }))
     } catch (err) {
       setError(err.message)
       setReloadKey(key => key + 1)
