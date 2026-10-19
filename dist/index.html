@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#173c2d">
+  <title>Arena Viva | Seu jogo começa aqui</title>
+  <meta name="description" content="Reserve sua quadra de areia em poucos cliques. Beach tennis, futevôlei e vôlei de praia.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="Arena Viva, início">
+      <span class="brand-mark" aria-hidden="true"><span></span></span>
+      <span>Arena <b>Viva</b></span>
+    </a>
+    <nav aria-label="Menu principal">
+      <a href="#modalidades">Modalidades</a>
+      <a href="#agenda">Horários</a>
+      <a href="#estrutura">A arena</a>
+      <a href="#contato">Contato</a>
+    </nav>
+    <a class="nav-cta" href="#agenda">Reservar quadra <span>↗</span></a>
+    <button class="menu-btn" aria-label="Abrir menu" aria-expanded="false">☰</button>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <img src="assets/hero-arena.png" alt="Amigos jogando beach tennis ao pôr do sol" class="hero-img">
+      <div class="hero-wash"></div>
+      <div class="hero-content">
+        <span class="eyebrow light"><i></i> Sua próxima partida começa aqui</span>
+        <h1>Mais jogo.<br><em>Menos espera.</em></h1>
+        <p>Reserve sua quadra de areia em poucos cliques e venha viver o melhor do esporte.</p>
+        <div class="hero-actions">
+          <a class="btn btn-coral" href="#agenda">Ver horários disponíveis <span>→</span></a>
+          <a class="text-link" href="#estrutura"><span class="play">▶</span> Conheça a Arena</a>
+        </div>
+        <div class="hero-proof">
+          <div class="avatars" aria-hidden="true"><span>LA</span><span>RM</span><span>CP</span><span>+</span></div>
+          <div><strong>4,9 <span class="stars">★★★★★</span></strong><small>Mais de 300 partidas este mês</small></div>
+        </div>
+      </div>
+      <div class="availability-pill"><span class="pulse"></span><div><b>Quadra disponível agora</b><small>Hoje, a partir das 18h</small></div><a href="#agenda">Ver →</a></div>
+    </section>
+
+    <section class="sport-strip" id="modalidades" aria-label="Modalidades disponíveis">
+      <p>Escolha seu jogo</p>
+      <button class="sport active" data-sport="Beach Tennis"><span>◒</span> Beach Tennis</button>
+      <button class="sport" data-sport="Futevôlei"><span>◉</span> Futevôlei</button>
+      <button class="sport" data-sport="Vôlei de Praia"><span>◎</span> Vôlei de Praia</button>
+      <div class="strip-note">Equipamentos inclusos <span>✓</span></div>
+    </section>
+
+    <section class="booking-section" id="agenda">
+      <div class="section-heading">
+        <div><span class="eyebrow"><i></i> Reserve em menos de 1 minuto</span><h2>Escolha quando<br>você quer <em>jogar.</em></h2></div>
+        <p>Selecione uma data, veja os horários disponíveis em tempo real e garanta sua quadra.</p>
+      </div>
+
+      <div class="booking-card">
+        <aside class="booking-summary">
+          <span class="step-label">SUA RESERVA</span>
+          <div class="summary-sport"><span class="summary-icon">◒</span><div><small>Modalidade</small><strong id="summarySport">Beach Tennis</strong></div><button id="changeSport">Alterar</button></div>
+          <div class="summary-line"><span>▣</span><div><small>Data</small><strong id="summaryDate">Selecione uma data</strong></div></div>
+          <div class="summary-line"><span>◷</span><div><small>Horário</small><strong id="summaryTime">Selecione um horário</strong></div></div>
+          <div class="summary-line"><span>⌂</span><div><small>Quadra</small><strong id="summaryCourt">A definir</strong></div></div>
+          <div class="summary-total"><span>Valor estimado</span><strong id="summaryPrice">—</strong></div>
+          <button class="btn btn-coral full" id="confirmBtn" disabled>Continuar reserva <span>→</span></button>
+          <small class="safe-note">✓ Sem cobrança nesta etapa</small>
+        </aside>
+
+        <div class="calendar-area">
+          <div class="calendar-top">
+            <button id="prevWeek" aria-label="Semana anterior">←</button>
+            <div><strong id="monthLabel">Outubro 2026</strong><small>Escolha o melhor dia para você</small></div>
+            <button id="nextWeek" aria-label="Próxima semana">→</button>
+          </div>
+          <div class="date-row" id="dateRow"></div>
+          <div class="slots-header"><strong>Horários disponíveis</strong><span><i></i> disponível <i class="selected-dot"></i> selecionado</span></div>
+          <div class="slots" id="slots"></div>
+          <div class="legend-note"><span>☀</span><p><strong>Dica:</strong> horários entre 17h e 19h são os mais disputados. Reserve com antecedência.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="experience" id="estrutura">
+      <div class="experience-copy">
+        <span class="eyebrow light"><i></i> Muito além da quadra</span>
+        <h2>Seu ponto de encontro<br>com o <em>esporte.</em></h2>
+        <p>Uma estrutura pensada para você jogar, se divertir e aproveitar cada momento.</p>
+        <div class="amenities">
+          <div><span>◈</span><strong>Areia especial</strong><small>Macia, limpa e nivelada</small></div>
+          <div><span>✦</span><strong>Iluminação LED</strong><small>Jogue também à noite</small></div>
+          <div><span>♨</span><strong>Vestiários</strong><small>Conforto antes e depois</small></div>
+          <div><span>◉</span><strong>Estacionamento</strong><small>Gratuito para clientes</small></div>
+        </div>
+      </div>
+      <div class="experience-number"><strong>3</strong><span>quadras<br>premium</span></div>
+    </section>
+
+    <section class="contact" id="contato">
+      <div>
+        <span class="eyebrow"><i></i> Vamos conversar</span>
+        <h2>Precisa de um horário<br>especial ou pacote mensal?</h2>
+        <p>Fale direto com a nossa equipe. Montamos condições para grupos, professores, eventos e campeonatos.</p>
+      </div>
+      <div class="contact-actions">
+        <a class="btn btn-green" id="whatsappBtn" href="https://wa.me/5500000000000?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20horários%20e%20valores." target="_blank" rel="noopener"><span class="wa">◉</span> Conversar no WhatsApp</a>
+        <a class="instagram" href="https://instagram.com/" target="_blank" rel="noopener"><span>◎</span><div><small>Siga no Instagram</small><strong>@arenaviva</strong></div><b>↗</b></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="#inicio"><span class="brand-mark"><span></span></span><span>Arena <b>Viva</b></span></a>
+    <p>Esporte, encontro e energia na areia.</p>
+    <div class="footer-links"><a href="#agenda">Reservar</a><a href="#estrutura">Estrutura</a><a href="#contato">Contato</a></div>
+    <small>© 2026 Arena Viva · Protótipo demonstrativo</small>
+  </footer>
+
+  <div class="modal" id="bookingModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+      <button class="modal-close" aria-label="Fechar">×</button>
+      <div class="success-icon">✓</div>
+      <span class="eyebrow"><i></i> Quase lá!</span>
+      <h2 id="modalTitle">Seu horário está reservado por 10 minutos.</h2>
+      <p id="modalDetails"></p>
+      <label>Seu nome<input id="customerName" type="text" placeholder="Como podemos te chamar?"></label>
+      <label>WhatsApp<input id="customerPhone" type="tel" placeholder="(00) 00000-0000"></label>
+      <button class="btn btn-coral full" id="finishBtn">Confirmar pelo WhatsApp <span>→</span></button>
+      <small>Este é um protótipo: nenhuma cobrança será realizada.</small>
+    </div>
+  </div>
+  <div class="toast" id="toast">Modalidade alterada</div>
+  <script src="app.js"></script>
+</body>
+</html>
