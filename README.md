@@ -4,6 +4,10 @@ Painel de gestão para arenas esportivas, desenvolvido para centralizar reservas
 
 Esta versão funciona como uma demonstração navegável do produto. Os dados são armazenados localmente no navegador e ainda não existe integração com backend, autenticação real ou meios de pagamento.
 
+## Projeto em equipe
+
+O projeto desenvolvido em colaboração com [gDorigon](https://github.com/gDorigon) está em [gDorigon/projeto-arena](https://github.com/gDorigon/projeto-arena), com acesso restrito. Este repositório contém a demonstração pública com persistência local.
+
 ## Visão do produto
 
 O Arena Viva foi pensado para facilitar a operação diária de espaços com quadras de areia, como arenas de beach tennis, futevôlei e vôlei de praia.
@@ -91,8 +95,8 @@ O projeto foi desenvolvido e validado com Node.js 24.
 Clone o repositório, entre na pasta do projeto e instale as dependências:
 
 ```bash
-git clone <url-do-repositorio>
-cd arena-viva-demo
+git clone https://github.com/gabrielsteinheuser/arena-viva.git
+cd arena-viva
 npm install
 ```
 
@@ -151,7 +155,7 @@ No Windows, substitua `npm` por `npm.cmd` caso necessário.
 ## Estrutura do projeto
 
 ```text
-arena-viva-demo/
+arena-viva/
 ├── src/
 │   ├── App.jsx        # Componentes, dados e regras da aplicação
 │   ├── main.jsx       # Inicialização do React
